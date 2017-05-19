@@ -1,0 +1,26 @@
+#!/usr/local/bin/python
+import sys
+import os
+from gfs.fs import *
+from gfs.service import AcquireDriveService
+from googleapiclient import errors
+
+def pp(p):
+    print "%.2f%%"%p
+
+if __name__ == "__main__":
+    if len(sys.argv) < 3:
+        print >>sys.stderr, """
+        Usage:
+            %s [FILE TO UPLOAD...] [PATH ON GOOGLE DRIVE]
+        """ % (__file__)
+        exit(1)
+    gpath = sys.argv[-1]
+    gpath = [] if gpath in ["", "/"] else gpath.split('/')
+    gf = GFolder(AcquireDriveService(), fullpath=gpath)
+    for target in sys.argv[1:-1]:
+        print target
+        gf.Upload(target, name=os.path.split(target)[1], progressCallback=pp)
+    print "Done"
+
+
